@@ -1,0 +1,165 @@
+---
+layout: default
+---
+
+<div class="page-with-sidebar">
+<div class="camp-page">
+
+  <!-- 브레드크럼 -->
+  <nav class="breadcrumb" aria-label="위치">
+    <a href="/">홈</a>
+    <span>›</span>
+    <a href="/region/{{ page.doShort | uri_escape }}/">{{ page.doShort }}</a>
+    <span>›</span>
+    <span>{{ page.parkName }}</span>
+  </nav>
+
+  <div class="gallery" id="gallery">
+    <div class="gallery-placeholder">🌳</div>
+  </div>
+
+  <!-- 헤더 -->
+  <div class="camp-header">
+    <div class="camp-tags">
+      <span class="tag tag-safe">📍 {{ page.doShort }} {{ page.sigungu }}</span>
+      {% if page.parkType and page.parkType != "" %}<span class="tag tag-type">{{ page.parkType }}</span>{% endif %}
+    </div>
+    <h1 class="camp-title">{{ page.parkName }}</h1>
+    <div class="camp-info-row">
+      <span class="camp-info-icon">📍</span>
+      <span>{{ page.addr }}</span>
+    </div>
+    {% if page.tel and page.tel != "" %}
+    <div class="camp-info-row">
+      <span class="camp-info-icon">📞</span>
+      <a href="tel:{{ page.tel }}">{{ page.tel }}</a>
+    </div>
+    {% endif %}
+    {% if page.area and page.area != "" %}
+    <div class="camp-info-row">
+      <span class="camp-info-icon">📐</span>
+      <span>면적 {{ page.area }}㎡</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 광고 -->
+  <div class="ad-slot">
+    {% include ad.html %}
+  </div>
+
+  <!-- 시설 정보 -->
+  {% if page.sportFacility.size > 0 or page.playFacility.size > 0 or page.convFacility.size > 0 or page.cultureFacility.size > 0 or page.etcFacility.size > 0 %}
+  <div class="camp-section trust-box">
+    <h2>🏞️ 시설 정보</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:.92rem;">
+      {% if page.sportFacility.size > 0 %}
+      <tr><td style="padding:8px 0;color:#6B7280;width:110px;vertical-align:top;">운동시설</td><td>{{ page.sportFacility | join: ", " }}</td></tr>
+      {% endif %}
+      {% if page.playFacility.size > 0 %}
+      <tr><td style="padding:8px 0;color:#6B7280;vertical-align:top;">유희시설</td><td>{{ page.playFacility | join: ", " }}</td></tr>
+      {% endif %}
+      {% if page.convFacility.size > 0 %}
+      <tr><td style="padding:8px 0;color:#6B7280;vertical-align:top;">편익시설</td><td>{{ page.convFacility | join: ", " }}</td></tr>
+      {% endif %}
+      {% if page.cultureFacility.size > 0 %}
+      <tr><td style="padding:8px 0;color:#6B7280;vertical-align:top;">교양시설</td><td>{{ page.cultureFacility | join: ", " }}</td></tr>
+      {% endif %}
+      {% if page.etcFacility.size > 0 %}
+      <tr><td style="padding:8px 0;color:#6B7280;vertical-align:top;">기타시설</td><td>{{ page.etcFacility | join: ", " }}</td></tr>
+      {% endif %}
+    </table>
+    <p style="font-size:.82rem;color:#166534;margin-top:14px;">
+      지방자치단체 공공데이터 기준입니다. 실제 시설 현황은 방문 전 관리기관에 확인하세요.
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- 지도 -->
+  <div class="camp-section">
+    <h2>🗺️ 위치</h2>
+    <div id="map" style="width:100%;height:280px;border-radius:10px;background:#F3F4F6;display:flex;align-items:center;justify-content:center;color:#9CA3AF;">지도를 불러오는 중...</div>
+    <a id="mapLink" href="https://map.kakao.com/?q={{ page.addr | uri_escape }}" class="reserve-btn secondary" style="margin-top:12px;display:block;">🗺️ 카카오맵에서 크게 보기</a>
+  </div>
+
+  <!-- 광고 -->
+  <div class="ad-slot">
+    {% include ad.html %}
+  </div>
+
+  <!-- 같은 지역 다른 곳 -->
+  <div class="region-camps">
+    <h2>📍 {{ page.doShort }} 다른 공원</h2>
+    <div id="regionGrid" class="camp-grid"></div>
+    <p style="margin-top:16px;">
+      <a href="/region/{{ page.doShort | uri_escape }}/">{{ page.doShort }} 전체 보기 →</a>
+    </p>
+  </div>
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Park",
+    "name": "{{ page.parkName | escape }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ page.addr | escape }}",
+      "addressCountry": "KR"
+    }{% if page.tel and page.tel != "" %},
+    "telephone": "{{ page.tel | escape }}"{% endif %}{% if page.lat and page.lat != "" %},
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": {{ page.lat }},
+      "longitude": {{ page.lng }}
+    }{% endif %}
+  }
+  </script>
+
+</div>
+<aside class="tool-sidebar"></aside>
+</div>
+
+<script>
+(async () => {
+  const currentSlug = {{ page.slug | jsonify }};
+  const currentRegion = {{ page.doShort | jsonify }};
+  const currentSigungu = {{ page.sigungu | jsonify }};
+  const lat = {{ page.lat | jsonify }};
+  const lng = {{ page.lng | jsonify }};
+  const addr = {{ page.addr | jsonify }};
+
+  const mapEl = document.getElementById('map');
+  if (mapEl) {
+    if (lat && lng) {
+      mapEl.innerHTML = `<iframe src="https://map.kakao.com/link/map/${encodeURIComponent({{ page.parkName | jsonify }})},${lat},${lng}" style="width:100%;height:100%;border:0;border-radius:10px;" loading="lazy"></iframe>`;
+    } else if (addr) {
+      mapEl.innerHTML = `<iframe src="https://map.kakao.com/?q=${encodeURIComponent(addr)}" style="width:100%;height:100%;border:0;border-radius:10px;" loading="lazy"></iframe>`;
+    }
+  }
+
+  try {
+    const resp = await fetch('/search_index.json');
+    const all = await resp.json();
+
+    const region = all
+      .filter(f => f.doShort === currentRegion && f.slug !== currentSlug)
+      .sort((a,b) => (a.sigungu === currentSigungu ? -1 : 1))
+      .slice(0, 6);
+
+    if (region.length > 0) {
+      document.getElementById('regionGrid').innerHTML = region.map(itemCard).join('');
+    }
+  } catch(e) {}
+
+  function itemCard(f) {
+    return `<a class="camp-card" href="/park/${f.slug}/">
+      <div class="camp-card-img-placeholder">🌳</div>
+      <div class="camp-card-body">
+        <div class="camp-card-name">${f.n}</div>
+        <div class="camp-card-loc">📍 ${f.sigungu || f.doShort || ''}</div>
+      </div>
+    </a>`;
+  }
+})();
+</script>

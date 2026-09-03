@@ -1,0 +1,31 @@
+title: 우아그린 - 전국 도시공원 찾기
+description: >-
+  전국 도시공원 18,200곳의 위치와 운동시설·놀이시설 정보를 지역별로 검색하세요.
+  근린공원, 어린이공원, 체육공원까지 한눈에 확인할 수 있습니다.
+url: "https://wooagreen.wooahouse.com"
+baseurl: ""
+lang: ko
+timezone: Asia/Seoul
+author: WooaHouse
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - scripts/
+  - "*.py"
+  - "*.log"
+  - "*.txt"
+  - README.md
+  - .gitignore
+  - vendor/
+  - _rawdata/
+  - data/
